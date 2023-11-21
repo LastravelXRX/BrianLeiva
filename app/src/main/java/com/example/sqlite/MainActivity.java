@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         Categoria.setAdapter(AdapterC);
 
         String [] UbicacionS = {"Seleccione:", "Estante A1", "Estante A2", "Estante A3", "Estante A4", "Estante A5"};
-
         ArrayAdapter<String> AdapterU = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, UbicacionS);
         Ubicacion.setAdapter(AdapterU);
 
@@ -54,25 +53,31 @@ public class MainActivity extends AppCompatActivity {
         String cantidad = Cantidad.getText().toString();
         String precio = Precio.getText().toString();
         String ubicacion = Ubicacion.getSelectedItem().toString();
-        if (!IDproducto.isEmpty() && !NombreProducto.isEmpty() && !CategoriaS.equals("Seleccione:") && !cantidad.equals("") && !precio.equals("") && !ubicacion.equals("Seleccione:")){
-            ContentValues DatosUsuario = new ContentValues();
-            DatosUsuario.put("ID", IDproducto);
-            DatosUsuario.put("NombreProducto", NombreProducto);
-            DatosUsuario.put("CategoriaProducto", CategoriaS);
-            DatosUsuario.put("CantidadProducto", cantidad);
-            DatosUsuario.put("PrecioProducto", precio);
-            DatosUsuario.put("UbicacionProducto", ubicacion);
-            BaseDatos.insert("Inventario_Bodega", null, DatosUsuario);
-            BaseDatos.close();
-            ID.setText("");
-            Nombre.setText("");
-            Categoria.setSelection(0);
-            Cantidad.setText("");
-            Precio.setText("");
-            Ubicacion.setSelection(0);
-            Toast.makeText(this,"Producto registrado exitosamente", Toast.LENGTH_SHORT).show();
+
+        Cursor fila1 = BaseDatos.rawQuery("Select * from Inventario_Bodega where ID=" + IDproducto, null);
+        if(fila1.moveToFirst()){
+            if (!IDproducto.isEmpty() && !NombreProducto.isEmpty() && !CategoriaS.equals("Seleccione:") && !cantidad.equals("") && !precio.equals("") && !ubicacion.equals("Seleccione:")){
+                ContentValues DatosUsuario = new ContentValues();
+                DatosUsuario.put("ID", IDproducto);
+                DatosUsuario.put("NombreProducto", NombreProducto);
+                DatosUsuario.put("CategoriaProducto", CategoriaS);
+                DatosUsuario.put("CantidadProducto", cantidad);
+                DatosUsuario.put("PrecioProducto", precio);
+                DatosUsuario.put("UbicacionProducto", ubicacion);
+                BaseDatos.insert("Inventario_Bodega", null, DatosUsuario);
+                BaseDatos.close();
+                ID.setText("");
+                Nombre.setText("");
+                Categoria.setSelection(0);
+                Cantidad.setText("");
+                Precio.setText("");
+                Ubicacion.setSelection(0);
+                Toast.makeText(this,"Producto registrado exitosamente", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this,"Debes completar toda la informacion", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this,"Debes completar toda la informacion", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "El ID es el mismo", Toast.LENGTH_LONG).show();
         }
     }
     public void BuscarProducto(View view){
